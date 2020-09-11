@@ -1,4 +1,5 @@
 import React from 'react';
+import { RecoilRoot } from 'recoil';
 import { Layout, Row, Col } from 'antd';
 import Header from './components/Header'
 import Movies from './components/Movies'
@@ -9,19 +10,21 @@ const { Content } = Layout;
 
 function App() {
   return (
-    <Layout style={{ height: '100vh' }}>
-      <Header />
-      <Content style={{ margin: 10 }}>
-        <Row gutter={10}>
-          <Col span="12">
-            <Movies />
-          </Col>
-          <Col span="12">
-            <FavoriteList />
-          </Col>
-        </Row>
-      </Content>
-    </Layout>
+    <RecoilRoot>
+      <Layout>
+        <Header />
+        <Content style={{ margin: 10 }}>
+          <Row gutter={10}>
+            <Col span="12">
+              <Movies />
+            </Col>
+            <Col span="12">
+              <FavoriteList />
+            </Col>
+          </Row>
+        </Content>
+      </Layout>
+    </RecoilRoot>
   );
 }
 

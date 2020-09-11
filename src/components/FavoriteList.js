@@ -1,19 +1,22 @@
 import React from 'react';
-import { List, Skeleton, Typography } from 'antd';
+import { useRecoilValue } from 'recoil';
+import { List, Typography } from 'antd';
+import { FavoriteListState } from '../state/atoms';
 
 const { Title } = Typography
 
 const FavoriteList = () => {
+  const favoriteList = useRecoilValue(FavoriteListState)
+
   return (
     <List
       header={<Title level={2}>My favorite list</Title>}
       style={{ boxShadow: "1px 1px 5px lightgrey", backgroundColor: "white" }}
       itemLayout="vertical"
-      // dataSource={}
+      dataSource={favoriteList}
       bordered
       renderItem={item => (
         <List.Item
-          actions={[<a key="list-loadmore-edit">Quitar</a>]}
           extra={
             <img
               width={70}
@@ -22,12 +25,10 @@ const FavoriteList = () => {
             />
           }
         >
-          <Skeleton title={false} loading={item.loading} active>
-            <List.Item.Meta
-              title={<a href="https://ant.design">{item.Title}</a>}
-              description={item.Genre}
-            />
-          </Skeleton>
+          <List.Item.Meta
+            title={item.Title}
+            description={item.Year}
+          />
         </List.Item>
       )}
     />

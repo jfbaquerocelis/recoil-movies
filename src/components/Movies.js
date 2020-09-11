@@ -1,32 +1,45 @@
 import React from 'react';
-import { List, Skeleton, Typography } from 'antd';
+import { useRecoilValueLoadable, useRecoilCallback, useRecoilValue } from 'recoil';
+import { List, Spin, Typography, Button } from 'antd';
+import { moviesQuery } from '../state/selectors';
+import { FavoriteListState } from '../state/atoms';
 
 const { Title } = Typography
 
-const list = [
-  {
-    Title: "Guardians of the Galaxy Vol. 2",
-    Poster: "https://m.media-amazon.com/images/M/MV5BNjM0NTc0NzItM2FlYS00YzEwLWE0YmUtNTA2ZWIzODc2OTgxXkEyXkFqcGdeQXVyNTgwNzIyNzg@._V1_SX300.jpg",
-    Genre: "Action, Adventure, Comedy, Sci-Fi"
-  },
-  {
-    Title: "Guardians of the Galaxy Vol. 2",
-    Poster: "https://m.media-amazon.com/images/M/MV5BNjM0NTc0NzItM2FlYS00YzEwLWE0YmUtNTA2ZWIzODc2OTgxXkEyXkFqcGdeQXVyNTgwNzIyNzg@._V1_SX300.jpg",
-    Genre: "Action, Adventure, Comedy, Sci-Fi"
-  }
-]
-
 const Movies = () => {
+  const results = useRecoilValueLoadable(moviesQuery)
+  const favoriteList = useRecoilValue(FavoriteListState)
+
+  const addFavorite = useRecoilCallback(({ set }) => {
+    return (item) => {
+      const favorite = favoriteList.find((favorite) => favorite.imdbID === item.imdbID)
+
+      if (favorite) return
+
+      set(FavoriteListState, [...favoriteList, item])
+    }
+  })
+
+  if (results.state === 'loading') return <Spin size="large" />
+
   return (
     <List
       header={<Title level={2}>Movie results</Title>}
       style={{ boxShadow: "1px 1px 5px lightgrey", backgroundColor: "white" }}
       itemLayout="vertical"
-      dataSource={list}
+      dataSource={results.contents.movies}
       bordered
       renderItem={item => (
         <List.Item
-          actions={[<a key="list-loadmore-edit">Add to favorites</a>]}
+          actions={[
+            <Button
+              onClick={() => {
+                addFavorite(item)
+              }}
+            >
+              Add to favorites
+            </Button>
+          ]}
           extra={
             <img
               width={70}
@@ -35,12 +48,10 @@ const Movies = () => {
             />
           }
         >
-          <Skeleton title={false} loading={item.loading} active>
-            <List.Item.Meta
-              title={<a href="https://ant.design">{item.Title}</a>}
-              description={item.Genre}
-            />
-          </Skeleton>
+          <List.Item.Meta
+            title={item.Title}
+            description={item.Year}
+          />
         </List.Item>
       )}
     />
